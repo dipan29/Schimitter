@@ -14,12 +14,14 @@ RHReliableDatagram RadioManager (RadioDriver, SERVER_ADDRESS);
 uint8_t ReturnMessage[] = "Pot data received";
 
 uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
+
 void setup()
 {
   Serial.begin(9600);
   if(!RadioManager.init())
-  Serial.println("init failed");
+    Serial.println("init failed");
 }
+
 void loop()
 {
   if (RadioManager.available())

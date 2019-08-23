@@ -5,7 +5,7 @@
 #define led_pin 3            /* Connect LED anode to D3 (PWM pin) */
 
 RF24 radio(7,8);             /* Creating instance 'radio'  ( CE , CSN )   CE -> D7 | CSN -> D8 */                               
-const byte Address[6] = "00009"; /* Address from which data to be received */
+const byte Address[6] = "00001"; /* Address from which data to be received */
 
 void setup() {
 // put your setup code here, to run once:

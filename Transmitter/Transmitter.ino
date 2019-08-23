@@ -17,7 +17,7 @@ void setup()
 {
   Serial.begin(9600);
   if(!RadioManager.init())
-  Serial.println("Init failed");
+    Serial.println("Init failed");
 }
 
 void loop()
