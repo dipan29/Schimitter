@@ -1,7 +1,6 @@
 #include <SPI.h>  
 #include "RF24.h"
-
-
+#include <nRF24L01.h>
 
 RF24 myRadio (8, 7);
 
@@ -26,7 +25,7 @@ void setup()
 
   myRadio.begin(); 
   myRadio.setChannel(115); 
-  myRadio.setPALevel(RF24_PA_MAX);
+  myRadio.setPALevel(RF24_PA_MIN);
   myRadio.setDataRate( RF24_250KBPS ) ; 
   myRadio.openReadingPipe(1, addresses[0]);
   //myRadio.setPayloadSize(sizeof(data));
