@@ -25,7 +25,7 @@ void setup()
   myRadio.setPALevel(RF24_PA_MAX);
   myRadio.setDataRate( RF24_1MBPS ) ; 
   myRadio.openWritingPipe( addresses[0]);
-  myRadio.setPayloadSize(sizeof(data));
+  //myRadio.setPayloadSize(sizeof(data));
   delay(1000);
 }
 
