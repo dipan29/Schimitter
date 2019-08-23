@@ -1,53 +1,47 @@
-#include <SPI.h>  
-#include <nRF24L01.h>
-#include <RF24.h>
+#include<RHReliableDatagram.h>
+#include<RH_NRF24.h>
+#include<SPI.h>
 
-RF24 myRadio (7, 8); //  CE,CNS
 
-struct package
+#define CLIENT_ADDRESS 1
+#define SERVER_ADDRESS 2
+
+
+RH_NRF24 RadioDriver;
+
+RHReliableDatagram RadioManager (RadioDriver, SERVER_ADDRESS);
+
+uint8_t ReturnMessage[] = "Pot data received";
+
+uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
+void setup()
 {
-  int id=0;
-  float temperature = 0.0;
-  char  text[100] ="empty";
-};
-
-byte addresses[][6] = {"5"}; 
-
-
-
-typedef struct package Package;
-Package data;
-
-void setup() 
-{
-  Serial.begin(115200);
-  delay(1000);
-
-  myRadio.begin(); 
-  //myRadio.setChannel(115); 
-  myRadio.setPALevel(RF24_PA_MIN);
-  //myRadio.setDataRate( RF24_250KBPS ) ; 
-  myRadio.openReadingPipe(1, addresses[0]);
-  //myRadio.setPayloadSize(sizeof(data));
-  myRadio.startListening();
+  Serial.begin(9600);
+  if(!RadioManager.init())
+  Serial.println("init failed");
 }
-
-void loop()  
+void loop()
 {
-
-  if ( myRadio.available()) 
+  if (RadioManager.available())
   {
-    while (myRadio.available())
-    {
-      myRadio.read( &data, sizeof(data) );
-    }
-    Serial.print("\nPackage:");
-    Serial.print(data.id);
-    Serial.print("\n");
-    Serial.println(data.temperature);
-    Serial.println(data.text);
-  } else {
-    //Serial.println("Radio Unavailable");
+   uint8_t len =sizeof(buf);
+   uint8_t from;
+   if (RadioManager.recvfromAck(buf, &len, &from))
+   {
+     Serial.print("Got request from : 0x");
+     Serial.print(from, HEX);
+     Serial.print("pot1: ");
+     Serial.print(buf[0]);
+     Serial.print("pot2: ");
+     Serial.print(buf[1]);
+     Serial.print("pot3: ");
+     Serial.print(buf[2]);
+     Serial.print("pot4: ");
+     Serial.print(buf[3]);
+     
+     if(!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
+     Serial.println("sendtowait failed:");
+   }
   }
-  //delay(500);
+  delay(100);
 }

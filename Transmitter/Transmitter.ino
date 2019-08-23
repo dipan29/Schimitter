@@ -1,48 +1,69 @@
-#include <SPI.h>  
-#include <nRF24L01.h>
-#include <RF24.h>
+#include <RHReliableDatagram.h>
+#include <RH_NRF24.h>
+#include <SPI.h>
 
-byte addresses[][6] = {"5"};
+#define CLIENT_ADDRESS 1
+#define SERVER_ADDRESS 2
 
-RF24 myRadio (7, 8); //  CE,CNS
+RH_NRF24 RadioDriver;
 
-struct package
-{
-  int id=1;
-  float temperature = 18.3;
-  char  text[100] = "Text to be transmitted";
-};
+RHReliableDatagram RadioManager (RadioDriver, CLIENT_ADDRESS);
 
+uint8_t servocontrol[5];
 
-typedef struct package Package;
-Package data;
+uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
 
 void setup()
 {
-  Serial.begin(115200);
-  delay(1000);
-  myRadio.begin();  
-  //myRadio.setChannel(115); 
-  myRadio.setPALevel(RF24_PA_MIN);
-  //myRadio.setDataRate( RF24_250KBPS ) ; 
-  myRadio.openWritingPipe( addresses[0]);
-  //myRadio.setPayloadSize(sizeof(data));
-  myRadio.stopListening();
-
-  delay(1000);
+  Serial.begin(9600);
+  if(!RadioManager.init())
+  Serial.println("Init failed");
 }
 
 void loop()
 {
-  myRadio.write(&data, sizeof(data)); 
+  //Serial.println("Reading pot values");
+  //servocontrol[0]= map(analogRead(Potpin1), 0, 1023, 0, 180);
+  //servocontrol[1]= map(analogRead(Potpin2), 0, 1023, 0, 180);
+  //servocontrol[2]= map(analogRead(Potpin3), 0, 1023, 0, 180);
+  //servocontrol[3]= map(analogRead(Potpin4), 0, 1023, 0, 180);
+  //servocontrol[4]= map(analogRead(Potpin5), 0, 1023, 0, 180);
+  
+  servocontrol[0] = 10;
+  servocontrol[1] = 20;
+  servocontrol[2] = 30;
+  servocontrol[3] = 40;
+  servocontrol[4] = 50;
+  Serial.println("..............");
+  Serial.println("pot1:");
+  Serial.println(servocontrol[0]);
+  Serial.println("pot2:");
+  Serial.println(servocontrol[1]);
+  Serial.println("pot3:");
+  Serial.println(servocontrol[2]);
+  Serial.println("pot4:");
+  Serial.println(servocontrol[3]);
+  Serial.println("pot5:");
+  Serial.println(servocontrol[4]);
+  Serial.println("Sending data to nrf server side");
+  if (RadioManager.sendtoWait(servocontrol, sizeof(servocontrol), SERVER_ADDRESS))
+  {
+    uint8_t len = sizeof(buf);
+    uint8_t from;
+    if (RadioManager.recvfromAckTimeout(buf, &len, 2000, &from))
+    {
+      Serial.print("got reply from : 0x");
+      Serial.print(from, HEX);
+      Serial.print(": ");
+      Serial.println((char*)buf); 
+    }
+    else
+    {
+      Serial.println("No reply, is the server running?");
+    }
+  }
+  else
+  Serial.println("sendtowait failed");
 
-  Serial.print("\nPackage:");
-  Serial.print(data.id);
-  Serial.print("\n");
-  Serial.println(data.temperature);
-  Serial.println(data.text);
-  data.id = data.id + 1;
-  data.temperature = data.temperature+0.1;
-  delay(1000);
-
+  delay(100);
 }
