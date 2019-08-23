@@ -1,81 +1,25 @@
-// Transmitter Test
+#include <SPI.h>                  /* to handle the communication interface with the modem*/
+#include <nRF24L01.h>             /* to handle this particular modem driver*/
+#include <RF24.h>                 /* the library which helps us to control the radio modem*/
 
-// Include RadioHead ReliableDatagram & NRF24 Libraries
-#include <RHReliableDatagram.h>
-#include <RH_NRF24.h>
+#define pot_pin A0                /*Variable pin of POT is to be connected to analog pin 0 i.e.A0*/
+RF24 radio(7,8);                    /* Creating instance 'radio'  ( CE , CSN )   CE -> D7 | CSN -> D8 */                              
+const byte Address[6] = "AB0000" ;     /* Address to which data to be transmitted*/
 
-// Include dependant SPI Library 
-#include <SPI.h>
-
-// Define Joystick Connections
-#define JoyStick_X_PIN     A0 
-#define JoyStick_Y_PIN     A1
-
-// Define addresses for radio channels
-#define CLIENT_ADDRESS 1   
-#define SERVER_ADDRESS 2
-
-// Create an instance of the radio driver
-RH_NRF24 RadioDriver;
-
-// Sets the radio driver to NRF24 and the client address to 1
-RHReliableDatagram RadioManager(RadioDriver, CLIENT_ADDRESS);
-
-// Declare unsigned 8-bit joystick array
-uint8_t joystick[3]; 
-
-// Define the Message Buffer
-uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
-
-void setup()
-{
-  // Setup Serial Monitor
+void setup() {
+  // put your setup code here, to run once:
   Serial.begin(9600);
-
-  // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
-  if (!RadioManager.init())
-    Serial.println("init failed");
+  pinMode(pot_pin,INPUT);         /* Setting A0 (POT pin) as input*/
+  radio.begin ();                 /* Activate the modem*/
+  radio.openWritingPipe (Address); /* Sets the address of transmitter to which program will send the data */
 }
-
-void loop()
-{
-  // Print to Serial Monitor
-  Serial.println("Reading joystick values ");
-  
-  // Read Joystick values and map to values of 0 - 255
-  joystick[0] = map(analogRead(JoyStick_X_PIN), 0, 1023, 0, 255);
-  joystick[1] = map(analogRead(JoyStick_Y_PIN), 0, 1023, 0, 255);
-  joystick[2] = 100;
-
-  //Display the joystick values in the serial monitor.
-  Serial.println("-----------");
-  Serial.print("x: ");
-  Serial.println(joystick[0]);
-  Serial.print("y: ");
-  Serial.println(joystick[1]);
-
-  Serial.println("Sending Joystick data to nrf24_reliable_datagram_server");
-  
-  //Send a message containing Joystick data to manager_server
-  if (RadioManager.sendtoWait(joystick, sizeof(joystick), SERVER_ADDRESS))
-  {
-    // Now wait for a reply from the server
-    uint8_t len = sizeof(buf);
-    uint8_t from;
-    if (RadioManager.recvfromAckTimeout(buf, &len, 2000, &from))
-    {
-      Serial.print("got reply from : 0x");
-      Serial.print(from, HEX);
-      Serial.print(": ");
-      Serial.println((char*)buf);
-    }
-    else
-    {
-      Serial.println("No reply, is nrf24_reliable_datagram_server running?");
-    }
-  }
-  else
-    Serial.println("sendtoWait failed");
-
-  delay(100);  // Wait a bit before next transmission
-}
+void loop() {
+  // put your main code here, to run repeatedly:
+  radio.stopListening ();          /* Setting modem in transmission mode*/
+  int value = analogRead(pot_pin);    /*Reading analog value at pin A0 and storing in varible 'value'*/
+  int data = map( value , 0 , 1023 , 0 , 255 );   /* Convering the 10 bit value to 8 bit */
+  radio.write(&data, sizeof(data));            /* Sending data over NRF 24L01*/
+  Serial.print("Transmitting Data : ");
+  Serial.println(data);                           /* Printing POT value on serial monitor*/
+  //delay(250);
+} 

@@ -1,60 +1,37 @@
-// Receiver Demo
+//// Adding Libraries 
+#include <SPI.h>             /* to handle the communication interface with the modem*/
+#include <nRF24L01.h>        /* to handle this particular modem driver*/
+#include <RF24.h>            /* the library which helps us to control the radio modem*/
+#define led_pin 3            /* Connect LED anode to D3 (PWM pin) */
 
-// Include RadioHead ReliableDatagram & NRF24 Libraries
-#include <RHReliableDatagram.h>
-#include <RH_NRF24.h>
+RF24 radio(7,8);             /* Creating instance 'radio'  ( CE , CSN )   CE -> D7 | CSN -> D8 */                               
+const byte Address[6] = "AB0000"; /* Address from which data to be received */
 
-// Include dependant SPI Library 
-#include <SPI.h>
+void setup() {
+// put your setup code here, to run once:
+Serial.begin(9600);            /*Setting baudrate of Serial Port to 9600*/
+radio.begin();                   /* Activate the modem*/
+radio.openReadingPipe(1, Address); /* Sets the address of receiver from which program will receive the data*/
+}
 
-// Define addresses for radio channels
-#define CLIENT_ADDRESS 1   
-#define SERVER_ADDRESS 2
-
-// Create an instance of the radio driver
-RH_NRF24 RadioDriver;
-
-// Sets the radio driver to NRF24 and the server address to 2
-RHReliableDatagram RadioManager(RadioDriver, SERVER_ADDRESS);
-
-// Define a message to return if values received
-uint8_t ReturnMessage[] = "JoyStick Data Received"; 
-
-// Define the Message Buffer
-uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
-
-void setup()
+void loop() {
+// put your main code here, to run repeatedly:
+radio.startListening();          /*Setting modem in Receiver mode*/
+if (radio.available())
 {
-  // Setup Serial Monitor
-  Serial.begin(9600);
+while (radio.available())              /* Loop until receiving valid data*/
+{
+int rx_data = 0 ;                    /* Variable to store received data */
+radio.read(&rx_data, sizeof(rx_data));/* Read the received data and store in ' rx_data ' */
+Serial.print("Received Data : ");
+Serial.println(rx_data);           /* Print received value on Serial Monitor */
+analogWrite(led_pin , rx_data);/* Write received value to PWM pin 3 to which LED is connected */
+}
+}
   
-  // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
-  if (!RadioManager.init())
-    Serial.println("init failed");
-} 
-
-void loop()
+else
 {
-  if (RadioManager.available())
-  {
- // Wait for a message addressed to us from the client
-    uint8_t len = sizeof(buf);
-    uint8_t from;
-    if (RadioManager.recvfromAck(buf, &len, &from))
- //Serial Print the values of joystick
-    {
-      Serial.print("got request from : 0x");
-      Serial.println(from, HEX);
-      Serial.print("X = ");
-      Serial.print(buf[0]);
-      Serial.print(" | Y = ");
-      Serial.print(buf[1]);
-      Serial.print(" | Z = ");
-      Serial.println(buf[2]);
-
-      // Send a reply back to the originator client, check for error
-      if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
-        Serial.println("sendtoWait failed");
-    }
-  }              
+Serial.println("Not Receiving !!!"); /* If not receiving valid data print " Not Receiving !!! " on Serial Monitor  */
+  }
+  ///// END OF LOOP //////
 }
