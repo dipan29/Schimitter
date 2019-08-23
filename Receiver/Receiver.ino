@@ -42,12 +42,12 @@ void loop()
  //Serial Print the values of joystick
     {
       Serial.print("got request from : 0x");
-      Serial.print(from, HEX);
-      Serial.print(": X = ");
+      Serial.println(from, HEX);
+      Serial.print("X = ");
       Serial.print(buf[0]);
-      Serial.print(" Y = ");
+      Serial.print(" | Y = ");
       Serial.print(buf[1]);
-      Serial.print(" Z = ");
+      Serial.print(" | Z = ");
       Serial.println(buf[2]);
 
       // Send a reply back to the originator client, check for error
