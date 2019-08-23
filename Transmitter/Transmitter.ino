@@ -22,9 +22,9 @@ void setup()
   Serial.begin(115200);
   delay(1000);
   myRadio.begin();  
-  myRadio.setChannel(115); 
+  //myRadio.setChannel(115); 
   myRadio.setPALevel(RF24_PA_MIN);
-  myRadio.setDataRate( RF24_250KBPS ) ; 
+  //myRadio.setDataRate( RF24_250KBPS ) ; 
   myRadio.openWritingPipe( addresses[0]);
   //myRadio.setPayloadSize(sizeof(data));
   delay(1000);
