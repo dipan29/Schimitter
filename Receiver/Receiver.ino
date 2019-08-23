@@ -2,7 +2,7 @@
 #include "RF24.h"
 #include <nRF24L01.h>
 
-RF24 myRadio (8, 7);
+RF24 myRadio (8, 7); //  CE,CNS
 
 struct package
 {

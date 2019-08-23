@@ -4,7 +4,7 @@
 
 byte addresses[][6] = {"0"};
 
-RF24 myRadio (8, 7);
+RF24 myRadio (7, 8); //  CE,CNS
 
 struct package
 {
