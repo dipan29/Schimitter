@@ -10,6 +10,7 @@ const byte address[6] = "00001";
 void setup() {
   // put your setup code here, to run once:
   pinMode(buzzer, OUTPUT);
+  Serial.begin(9600);
   radio.begin();
   radio.openReadingPipe(0,address);
   radio.setPALevel(RF24_PA_MAX);
@@ -25,6 +26,7 @@ void loop() {
     String transData = String(text);
     if (transData == "nrftest") {
         tone(buzzer, 1000);
+        Serial.println("GOT IT");
         delay(500);
         noTone(buzzer);
       }    
