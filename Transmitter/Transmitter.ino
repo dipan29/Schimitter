@@ -2,7 +2,7 @@
 #include "RF24.h"
 #include <nRF24L01.h>
 
-byte addresses[][6] = {"0"};
+byte addresses[][6] = {"5"};
 
 RF24 myRadio (7, 8); //  CE,CNS
 
