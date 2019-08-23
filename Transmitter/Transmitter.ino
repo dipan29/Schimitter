@@ -1,26 +1,44 @@
-#include <SPI.h>                  /* to handle the communication interface with the modem*/
-#include <nRF24L01.h>             /* to handle this particular modem driver*/
-#include <RF24.h>                 /* the library which helps us to control the radio modem*/
+#include <SPI.h>  
+#include "RF24.h"
 
-#define pot_pin A0                /*Variable pin of POT is to be connected to analog pin 0 i.e.A0*/
-RF24 radio(7,8);                    /* Creating instance 'radio'  ( CE , CSN )   CE -> D7 | CSN -> D8 */                              
-const byte Address[6] = " 00005 " ;     /* Address to which data to be transmitted*/
+byte addresses[][6] = {"0"};
 
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
-  pinMode(pot_pin,INPUT);         /* Setting A0 (POT pin) as input*/
-  radio.begin ();                 /* Activate the modem*/
-  radio.openWritingPipe (Address); /* Sets the address of transmitter to which program will send the data */
-  radio.stopListening ();
+RF24 myRadio (7, 8);
+
+struct package
+{
+  int id=1;
+  float temperature = 18.3;
+  char  text[100] = "Text to be transmitted";
+};
+
+
+typedef struct package Package;
+Package data;
+
+void setup()
+{
+  Serial.begin(115200);
+  delay(1000);
+  myRadio.begin();  
+  myRadio.setChannel(115); 
+  myRadio.setPALevel(RF24_PA_MAX);
+  myRadio.setDataRate( RF24_250KBPS ) ; 
+  myRadio.openWritingPipe( addresses[0]);
+  delay(1000);
 }
-void loop() {
-  // put your main code here, to run repeatedly:
-            /* Setting modem in transmission mode*/
-  int value = analogRead(pot_pin);    /*Reading analog value at pin A0 and storing in varible 'value'*/
-  int data = map( value , 0 , 1023 , 0 , 255 );   /* Convering the 10 bit value to 8 bit */
-  radio.write(&data, sizeof(data));            /* Sending data over NRF 24L01*/
-  Serial.print("Transmitting Data : ");
-  Serial.println(data);                           /* Printing POT value on serial monitor*/
-  //delay(250);
-} 
+
+void loop()
+{
+  myRadio.write(&data, sizeof(data)); 
+
+  Serial.print("\nPackage:");
+  Serial.print(data.id);
+  Serial.print("\n");
+  Serial.println(data.temperature);
+  Serial.println(data.text);
+  data.id = data.id + 1;
+  data.temperature = data.temperature+0.1;
+  delay(1000);
+
+}
