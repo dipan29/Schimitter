@@ -5,18 +5,19 @@
 #define led_pin 3            /* Connect LED anode to D3 (PWM pin) */
 
 RF24 radio(7,8);             /* Creating instance 'radio'  ( CE , CSN )   CE -> D7 | CSN -> D8 */                               
-const byte Address[6] = "AB0000"; /* Address from which data to be received */
+const byte Address[6] = " 00005 "; /* Address from which data to be received */
 
 void setup() {
 // put your setup code here, to run once:
 Serial.begin(9600);            /*Setting baudrate of Serial Port to 9600*/
 radio.begin();                   /* Activate the modem*/
 radio.openReadingPipe(1, Address); /* Sets the address of receiver from which program will receive the data*/
+radio.startListening();
 }
 
 void loop() {
 // put your main code here, to run repeatedly:
-radio.startListening();          /*Setting modem in Receiver mode*/
+          /*Setting modem in Receiver mode*/
 if (radio.available())
 {
 while (radio.available())              /* Loop until receiving valid data*/
