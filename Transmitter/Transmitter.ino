@@ -1,6 +1,6 @@
 #include <SPI.h>  
-#include "RF24.h"
 #include <nRF24L01.h>
+#include <RF24.h>
 
 byte addresses[][6] = {"5"};
 
@@ -27,6 +27,8 @@ void setup()
   //myRadio.setDataRate( RF24_250KBPS ) ; 
   myRadio.openWritingPipe( addresses[0]);
   //myRadio.setPayloadSize(sizeof(data));
+  myRadio.stopListening();
+
   delay(1000);
 }
 
