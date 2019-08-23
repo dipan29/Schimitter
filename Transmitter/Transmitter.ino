@@ -3,7 +3,7 @@
 
 byte addresses[][6] = {"0"};
 
-RF24 myRadio (7, 8);
+RF24 myRadio (8, 7);
 
 struct package
 {
@@ -23,7 +23,7 @@ void setup()
   myRadio.begin();  
   myRadio.setChannel(115); 
   myRadio.setPALevel(RF24_PA_MAX);
-  myRadio.setDataRate( RF24_250KBPS ) ; 
+  myRadio.setDataRate( RF24_1MBPS ) ; 
   myRadio.openWritingPipe( addresses[0]);
   delay(1000);
 }

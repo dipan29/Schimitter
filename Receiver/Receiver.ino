@@ -3,7 +3,7 @@
 
 
 
-RF24 myRadio (7, 8);
+RF24 myRadio (8, 7);
 
 struct package
 {
@@ -26,8 +26,8 @@ void setup()
 
   myRadio.begin(); 
   myRadio.setChannel(115); 
-  myRadio.setPALevel(RF24_PA_MAX);
-  myRadio.setDataRate( RF24_250KBPS ) ; 
+  myRadio.setPALevel(RF24_PA_MIN);
+  myRadio.setDataRate( RF24_1MBPS ) ; 
   myRadio.openReadingPipe(1, addresses[0]);
   myRadio.startListening();
 }
@@ -46,6 +46,8 @@ void loop()
     Serial.print("\n");
     Serial.println(data.temperature);
     Serial.println(data.text);
+  } else {
+    //Serial.println("Radio Unavailable");
   }
-
+  //delay(500);
 }
