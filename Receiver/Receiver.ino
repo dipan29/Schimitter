@@ -27,7 +27,7 @@ void setup()
   myRadio.begin(); 
   myRadio.setChannel(115); 
   myRadio.setPALevel(RF24_PA_MIN);
-  myRadio.setDataRate( RF24_1MBPS ) ; 
+  myRadio.setDataRate( RF24_250KBPS ) ; 
   myRadio.openReadingPipe(1, addresses[0]);
   //myRadio.setPayloadSize(sizeof(data));
   myRadio.startListening();
