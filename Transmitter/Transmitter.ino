@@ -47,15 +47,17 @@ void loop()
   //joystick[1] = map(analogRead(JoyStick_Y_PIN), 0, 1023, 0, 255);
   joystick[0] += 1;
   joystick[1] += 10;
-  joystick[2] += 100;
+  joystick[2] += 5;
   
   //Display the joystick values in the serial monitor.
   Serial.println("-----------");
-  Serial.print("x:");
+  Serial.print("x: ");
   Serial.println(joystick[0]);
-  Serial.print("y:");
+  Serial.print("y: ");
   Serial.println(joystick[1]);
-
+  Serial.print("z: ");
+  Serial.println(joystick[2]);
+  
   Serial.println("Sending Joystick data to nrf24_reliable_datagram_server");
   
   //Send a message containing Joystick data to manager_server

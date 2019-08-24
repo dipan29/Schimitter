@@ -54,5 +54,7 @@ void loop()
       if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
         Serial.println("sendtoWait failed");
     }
-  }              
+  }  
+
+  delay(50);
 }
