@@ -1,53 +1,65 @@
+// Include RadioHead ReliableDatagram & NRF24 Libraries
 #include <RHReliableDatagram.h>
 #include <RH_NRF24.h>
+
+// Include dependant SPI Library 
 #include <SPI.h>
 
-#define CLIENT_ADDRESS 1
+// Define Joystick Connections
+#define JoyStick_X_PIN     A0 
+#define JoyStick_Y_PIN     A1
+
+// Define addresses for radio channels
+#define CLIENT_ADDRESS 1   
 #define SERVER_ADDRESS 2
 
+// Create an instance of the radio driver
 RH_NRF24 RadioDriver;
 
-RHReliableDatagram RadioManager (RadioDriver, CLIENT_ADDRESS);
+// Sets the radio driver to NRF24 and the client address to 1
+RHReliableDatagram RadioManager(RadioDriver, CLIENT_ADDRESS);
 
-uint8_t servocontrol[5];
+// Declare unsigned 8-bit joystick array
+uint8_t joystick[3]; 
 
+// Define the Message Buffer
 uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
 
 void setup()
 {
+  // Setup Serial Monitor
   Serial.begin(9600);
-  if(!RadioManager.init())
-    Serial.println("Init failed");
+
+  // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
+  if (!RadioManager.init())
+    Serial.println("init failed");
 }
 
 void loop()
 {
-  //Serial.println("Reading pot values");
-  //servocontrol[0]= map(analogRead(Potpin1), 0, 1023, 0, 180);
-  //servocontrol[1]= map(analogRead(Potpin2), 0, 1023, 0, 180);
-  //servocontrol[2]= map(analogRead(Potpin3), 0, 1023, 0, 180);
-  //servocontrol[3]= map(analogRead(Potpin4), 0, 1023, 0, 180);
-  //servocontrol[4]= map(analogRead(Potpin5), 0, 1023, 0, 180);
+  // Print to Serial Monitor
+  Serial.println("Reading joystick values ");
   
-  servocontrol[0] = 10;
-  servocontrol[1] = 20;
-  servocontrol[2] = 30;
-  servocontrol[3] = 40;
-  servocontrol[4] = 50;
-  Serial.println("..............");
-  Serial.println("pot1:");
-  Serial.println(servocontrol[0]);
-  Serial.println("pot2:");
-  Serial.println(servocontrol[1]);
-  Serial.println("pot3:");
-  Serial.println(servocontrol[2]);
-  Serial.println("pot4:");
-  Serial.println(servocontrol[3]);
-  Serial.println("pot5:");
-  Serial.println(servocontrol[4]);
-  Serial.println("Sending data to nrf server side");
-  if (RadioManager.sendtoWait(servocontrol, sizeof(servocontrol), SERVER_ADDRESS))
+  // Read Joystick values and map to values of 0 - 255
+  //joystick[0] = map(analogRead(JoyStick_X_PIN), 0, 1023, 0, 255);
+  //joystick[1] = map(analogRead(JoyStick_Y_PIN), 0, 1023, 0, 255);
+  joystick[0] = 50;
+  joystick[1] = 75;
+  joystick[2] = 100;
+
+  //Display the joystick values in the serial monitor.
+  Serial.println("-----------");
+  Serial.print("x:");
+  Serial.println(joystick[0]);
+  Serial.print("y:");
+  Serial.println(joystick[1]);
+
+  Serial.println("Sending Joystick data to nrf24_reliable_datagram_server");
+  
+  //Send a message containing Joystick data to manager_server
+  if (RadioManager.sendtoWait(joystick, sizeof(joystick), SERVER_ADDRESS))
   {
+    // Now wait for a reply from the server
     uint8_t len = sizeof(buf);
     uint8_t from;
     if (RadioManager.recvfromAckTimeout(buf, &len, 2000, &from))
@@ -55,15 +67,15 @@ void loop()
       Serial.print("got reply from : 0x");
       Serial.print(from, HEX);
       Serial.print(": ");
-      Serial.println((char*)buf); 
+      Serial.println((char*)buf);
     }
     else
     {
-      Serial.println("No reply, is the server running?");
+      Serial.println("No reply, is nrf24_reliable_datagram_server running?");
     }
   }
   else
-  Serial.println("sendtowait failed");
+    Serial.println("sendtoWait failed");
 
-  delay(100);
+  delay(100);  // Wait a bit before next transmission
 }

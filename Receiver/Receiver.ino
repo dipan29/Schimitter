@@ -1,49 +1,58 @@
-#include<RHReliableDatagram.h>
-#include<RH_NRF24.h>
-#include<SPI.h>
+// Include RadioHead ReliableDatagram & NRF24 Libraries
+#include <RHReliableDatagram.h>
+#include <RH_NRF24.h>
 
+// Include dependant SPI Library 
+#include <SPI.h>
 
-#define CLIENT_ADDRESS 1
+// Define addresses for radio channels
+#define CLIENT_ADDRESS 1   
 #define SERVER_ADDRESS 2
 
-
+// Create an instance of the radio driver
 RH_NRF24 RadioDriver;
 
-RHReliableDatagram RadioManager (RadioDriver, SERVER_ADDRESS);
+// Sets the radio driver to NRF24 and the server address to 2
+RHReliableDatagram RadioManager(RadioDriver, SERVER_ADDRESS);
 
-uint8_t ReturnMessage[] = "Pot data received";
+// Define a message to return if values received
+uint8_t ReturnMessage[] = "JoyStick Data Received"; 
 
+// Define the Message Buffer
 uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
 
 void setup()
 {
+  // Setup Serial Monitor
   Serial.begin(9600);
-  if(!RadioManager.init())
+  
+  // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
+  if (!RadioManager.init())
     Serial.println("init failed");
-}
+} 
 
 void loop()
 {
   if (RadioManager.available())
   {
-   uint8_t len =sizeof(buf);
-   uint8_t from;
-   if (RadioManager.recvfromAck(buf, &len, &from))
-   {
-     Serial.print("Got request from : 0x");
-     Serial.print(from, HEX);
-     Serial.print("pot1: ");
-     Serial.print(buf[0]);
-     Serial.print("pot2: ");
-     Serial.print(buf[1]);
-     Serial.print("pot3: ");
-     Serial.print(buf[2]);
-     Serial.print("pot4: ");
-     Serial.print(buf[3]);
-     
-     if(!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
-     Serial.println("sendtowait failed:");
-   }
-  }
-  delay(100);
+ // Wait for a message addressed to us from the client
+    uint8_t len = sizeof(buf);
+    uint8_t from;
+    if (RadioManager.recvfromAck(buf, &len, &from))
+ //Serial Print the values of joystick
+    {
+      Serial.print("got request from : 0x");
+      Serial.print(from, HEX);
+      Serial.print(": X = ");
+      Serial.print(buf[0]);
+      Serial.print(" Y = ");
+      Serial.print(buf[1]);
+      Serial.print(" Z = ");
+      Serial.println(buf[2]);
+
+      // Send a reply back to the originator client, check for error
+      if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
+        Serial.println("sendtoWait failed");
+    }
+  }              
 }
