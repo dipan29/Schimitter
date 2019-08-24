@@ -10,8 +10,8 @@
 #define JoyStick_Y_PIN     A1
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 1   
-#define SERVER_ADDRESS 2
+#define CLIENT_ADDRESS 5   
+#define SERVER_ADDRESS 9
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -29,7 +29,9 @@ void setup()
 {
   // Setup Serial Monitor
   Serial.begin(9600);
-
+  joystick[0] = 10;
+  joystick[1] = 100;
+  joystick[2] = 500 ;
   // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
   if (!RadioManager.init())
     Serial.println("init failed");
@@ -43,10 +45,10 @@ void loop()
   // Read Joystick values and map to values of 0 - 255
   //joystick[0] = map(analogRead(JoyStick_X_PIN), 0, 1023, 0, 255);
   //joystick[1] = map(analogRead(JoyStick_Y_PIN), 0, 1023, 0, 255);
-  joystick[0] = 50;
-  joystick[1] = 75;
-  joystick[2] = 100;
-
+  joystick[0] += 1;
+  joystick[1] += 10;
+  joystick[2] += 100;
+  
   //Display the joystick values in the serial monitor.
   Serial.println("-----------");
   Serial.print("x:");

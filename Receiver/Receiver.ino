@@ -6,8 +6,8 @@
 #include <SPI.h>
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 1   
-#define SERVER_ADDRESS 2
+#define CLIENT_ADDRESS 5   
+#define SERVER_ADDRESS 9
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
