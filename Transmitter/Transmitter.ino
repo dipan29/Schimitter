@@ -14,6 +14,8 @@
 // Define Joystick Values - Start at 512 (middle position)
 int joyposVert = 512;
 int joyposHorz = 512;
+int joyX; int defX;
+int joyY; int defY;
 
 struct DataManager {
   byte in1;
@@ -45,6 +47,7 @@ uint8_t motorcontrol[3];
 
 // Define the Message Buffer
 uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
+byte tx_buf[sizeof(data)] = {0};
 
 void setup()
 {
@@ -69,90 +72,38 @@ void loop()
   joyposVert = analogRead(joyVert); 
   joyposHorz = analogRead(joyHorz);
 
-  // Determine if this is a forward or backward motion
-  // Do this by reading the Verticle Value
-  // Apply results to MotorSpeed and to Direction
-
-  if (joyposVert < 460)
-  {
-    // This is Backward
-    // Set Motors backward
-    motorcontrol[2] = 1;
-
-    //Determine Motor Speeds
-    // As we are going backwards we need to reverse readings
-    motorcontrol[0] = map(joyposVert, 460, 0, 0, 255);
-    motorcontrol[1] = map(joyposVert, 460, 0, 0, 255);
-
-  }
-  else if (joyposVert > 564)
-  {
-    // This is Forward
-    // Set Motors forward
-    motorcontrol[2] = 0;
-
-    //Determine Motor Speeds
-    motorcontrol[0] = map(joyposVert, 564, 1023, 0, 255);
-    motorcontrol[1] = map(joyposVert, 564, 1023, 0, 255); 
-
-  }
+  joyX = map(joyposHorz,0,1023,0,255); 
+  if(joyX > 127) 
+    defX = joyX - 127;
   else
-  {
-    // This is Stopped
-    motorcontrol[0] = 0;
-    motorcontrol[1] = 0;
-    motorcontrol[2] = 0; 
+    defX = 128 - joyX;
+    
+  joyY = map(joyposHorz,0,1023,0,255);
+  
+  if(joyY > 127) 
+    defY = joyY - 127;
+  else
+    defY = 128 - joyY;
 
+  // Movement Calling
+  
+  if( joyY > 230 && defX < 30) //GO Straight Forward
+  {
+    forward(255, 255);
+    Serial.println ("Direction Full Forward");
+  } else if (joyY < 40 && defX < 30) // Go Straight Backward
+  {
+    backward(255, 255);
+    Serial.println ("Direction Full Backward");
   }
   
-  // Now do the steering
-  // The Horizontal position will "weigh" the motor speed
-  // Values for each motor
 
-  if (joyposHorz < 460)
-  {
-    // Move Left
-    // As we are going left we need to reverse readings
-    // Map the number to a value of 255 maximum
-    joyposHorz = map(joyposHorz, 460, 0, 0, 255);
-
-    motorcontrol[0] = motorcontrol[0] - joyposHorz;
-    motorcontrol[1] = motorcontrol[1] + joyposHorz;
-
-    // Don't exceed range of 0-255 for motor speeds
-    if (motorcontrol[0] < 0)motorcontrol[0] = 0;
-    if (motorcontrol[1] > 255)motorcontrol[1] = 255;
-
-  }
-  else if (joyposHorz > 564)
-  {
-    // Move Right
-    // Map the number to a value of 255 maximum
-    joyposHorz = map(joyposHorz, 564, 1023, 0, 255);
   
-    motorcontrol[0] = motorcontrol[0] + joyposHorz;
-    motorcontrol[1] = motorcontrol[1] - joyposHorz;
-
-    // Don't exceed range of 0-255 for motor speeds
-    if (motorcontrol[0] > 255)motorcontrol[0] = 255;
-    if (motorcontrol[1] < 0)motorcontrol[1] = 0;      
-
-  }
-
-  // Adjust to prevent "buzzing" at very low speed
-  if (motorcontrol[0] < 8)motorcontrol[0] = 0;
-  if (motorcontrol[1] < 8)motorcontrol[1] = 0;
-
-  //Display the Motor Control values in the serial monitor.
-  Serial.print("Motor A: ");
-  Serial.print(motorcontrol[0]);
-  Serial.print(" - Motor B: ");
-  Serial.print(motorcontrol[1]);
-  Serial.print(" - Direction: ");
-  Serial.println(motorcontrol[2]);
+  // Type Conversion
+  memcpy(tx_buf, &data, sizeof(data));
   
   //Send a message containing Motor Control data to manager_server
-  if (RadioManager.sendtoWait(motorcontrol, sizeof(motorcontrol), SERVER_ADDRESS))
+  if (RadioManager.sendtoWait((uint8_t *)tx_buf, sizeof(data), SERVER_ADDRESS))
   {
     // Now wait for a reply from the server
     uint8_t len = sizeof(buf);
@@ -173,4 +124,97 @@ void loop()
     Serial.println("sendtoWait failed");
 
   delay(100);  // Wait a bit before next transmission
+}
+
+
+// Movement Functions 
+
+void forward(int ENA, int ENB) {
+  data.in1 = 1;
+  data.in2 = 0;
+  data.enA = ENA;
+  
+  data.in3 = 1;
+  data.in4 = 0;
+  data.enB = ENB;
+}
+
+void backward(int ENA, int ENB) {
+  data.in1 = 0;
+  data.in2 = 1;
+  data.enA = ENA;
+  
+  data.in3 = 0;
+  data.in4 = 1;
+  data.enB = ENB;
+}
+
+void leftF(int ENA, int ENB) {
+  data.in1 = 1;
+  data.in2 = 0;
+  data.enA = ENA;
+  
+  data.in3 = 1;
+  data.in4 = 0;
+  data.enB = ENB;
+}
+
+void rightF(int ENA, int ENB) {
+  data.in1 = 1;
+  data.in2 = 0;
+  data.enA = ENA;
+  
+  data.in3 = 1;
+  data.in4 = 0;
+  data.enB = ENB;
+}
+
+void leftB(int ENA, int ENB) {
+  data.in1 = 0;
+  data.in2 = 1;
+  data.enA = ENA;
+  
+  data.in3 = 0;
+  data.in4 = 1;
+  data.enB = ENB;
+}
+
+void rightB(int ENA, int ENB) {
+  data.in1 = 0;
+  data.in2 = 1;
+  data.enA = ENA;
+  
+  data.in3 = 0;
+  data.in4 = 1;
+  data.enB = ENB;
+}
+
+void left(int ENA, int ENB) {
+  data.in1 = 0;
+  data.in2 = 0;
+  data.enA = ENA;
+  
+  data.in3 = 1;
+  data.in4 = 0;
+  data.enB = ENB;
+}
+
+void right(int ENA, int ENB) {
+  data.in1 = 1;
+  data.in2 = 0;
+  data.enA = ENA;
+  
+  data.in3 = 0;
+  data.in4 = 0;
+  data.enB = ENB;
+}
+
+void Stop() {
+  data.in1 = 1;
+  data.in2 = 0;
+  data.enA = 0;
+  
+  data.in3 = 0;
+  data.in4 = 0;
+  data.enB = 0;
 }
