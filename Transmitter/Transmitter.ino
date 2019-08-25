@@ -8,12 +8,26 @@
 #include <SPI.h>
 
 // Define Joystick Connections
-#define joyVert    A0 
-#define joyHorz    A1
+#define joyVert    A0 // X-AXIS
+#define joyHorz    A1 // Y-AXIS
 
 // Define Joystick Values - Start at 512 (middle position)
 int joyposVert = 512;
 int joyposHorz = 512;
+
+struct DataManager {
+  byte in1;
+  byte in2;
+  byte enA;
+
+  byte in3;
+  byte in4;
+  byte enB;
+
+  byte ack;
+};
+
+DataManager data;
 
 // Define addresses for radio channels
 #define CLIENT_ADDRESS 5   
@@ -36,7 +50,7 @@ void setup()
 {
   // Setup Serial Monitor
   Serial.begin(9600);
- 
+  data.ack = 0;
   // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
   if (!RadioManager.init())
     Serial.println("init failed");

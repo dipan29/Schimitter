@@ -11,12 +11,26 @@
 #define CLIENT_ADDRESS 5   
 #define SERVER_ADDRESS 9
 
-// Motor A Connections
+struct DataManager {
+  byte in1;
+  byte in2;
+  byte enA;
+
+  byte in3;
+  byte in4;
+  byte enB;
+
+  byte ack;
+};
+
+DataManager data;
+
+// Motor A Connections - LEFT
 int enA = 3;
 int in1 = 2;
 int in2 = 4;
 
-// Motor B Connections
+// Motor B Connections - RIGHT
 int enB = 5;
 int in3 = 6;
 int in4 = 7;
@@ -39,9 +53,9 @@ void setup()
   Serial.begin(9600);
   
   // Set all the motor control pins to outputs
-  pinMode(enA, OUTPUT);
-  pinMode(enB, OUTPUT);
-  pinMode(in1, OUTPUT);
+  pinMode(enA, OUTPUT); //PWM
+  pinMode(enB, OUTPUT); //PWM
+  pinMode(in1, OUTPUT); 
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
