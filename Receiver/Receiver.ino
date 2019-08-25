@@ -61,25 +61,25 @@ void loop()
     {
 
       //Serial Print the values of joystick
-      //Serial.print("got request from : 0x");
-      //Serial.print(from, HEX);
-      //Serial.print(": MotorA = ");
-      //Serial.print(buf[0]);
-      //Serial.print(" MotorB = ");
-      //Serial.print(buf[1]);
-      //Serial.print(" Dir = ");
-      //Serial.println(buf[2]);
+      Serial.print("got request from : 0x");
+      Serial.print(from, HEX);
+      Serial.print(": MotorA = ");
+      Serial.print(buf[0]);
+      Serial.print(" MotorB = ");
+      Serial.print(buf[1]);
+      Serial.print(" Dir = ");
+      Serial.println(buf[2]);
       
       // Set Motor Direction
       if (buf[2] == 1)
       {
-    // Motors are backwards
+    // Motors are forward
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
     }else{
-    // Motors are forwards
+    // Motors are backward
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
     digitalWrite(in3, HIGH);

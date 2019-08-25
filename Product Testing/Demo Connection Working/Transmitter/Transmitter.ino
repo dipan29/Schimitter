@@ -43,10 +43,10 @@ void loop()
   Serial.println("Reading joystick values ");
   
   // Read Joystick values and map to values of 0 - 255
-  //joystick[0] = map(analogRead(JoyStick_X_PIN), 0, 1023, 0, 255);
-  //joystick[1] = map(analogRead(JoyStick_Y_PIN), 0, 1023, 0, 255);
-  joystick[0] += 1;
-  joystick[1] += 10;
+  joystick[0] = map(analogRead(JoyStick_X_PIN), 0, 1023, 0, 255);
+  joystick[1] = map(analogRead(JoyStick_Y_PIN), 0, 1023, 0, 255);
+  //joystick[0] += 1;
+  //joystick[1] += 10;
   joystick[2] += 5;
   
   //Display the joystick values in the serial monitor.
