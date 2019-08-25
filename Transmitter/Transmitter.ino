@@ -49,83 +49,24 @@ void loop()
   // Print to Serial Monitor
   Serial.println("Reading motorcontrol values ");
   
+  
   // Read the Joystick X and Y positions
   joyposVert = analogRead(joyVert); 
   joyposHorz = analogRead(joyHorz);
+  Serial.println(joyposVert);
+  Serial.println(joyposHorz);
 
   // Determine if this is a forward or backward motion
   // Do this by reading the Verticle Value
   // Apply results to MotorSpeed and to Direction
+  motorcontrol[0] = map(joyposVert, 0, 1023, 0, 255);
+  motorcontrol[1] = map(joyposHorz, 0, 1023, 0, 255);
+  motorcontrol[2] = 0;
+  Serial.println(motorcontrol[0]);
+  Serial.println(motorcontrol[1]);
 
-  if (joyposVert < 460)
-  {
-    // This is Backward
-    // Set Motors backward
-    motorcontrol[2] = 1;
-
-    //Determine Motor Speeds
-    // As we are going backwards we need to reverse readings
-    motorcontrol[0] = map(joyposVert, 460, 0, 0, 255);
-    motorcontrol[1] = map(joyposVert, 460, 0, 0, 255);
-
-  }
-  else if (joyposVert > 564)
-  {
-    // This is Forward
-    // Set Motors forward
-    motorcontrol[2] = 0;
-
-    //Determine Motor Speeds
-    motorcontrol[0] = map(joyposVert, 564, 1023, 0, 255);
-    motorcontrol[1] = map(joyposVert, 564, 1023, 0, 255); 
-
-  }
-  else
-  {
-    // This is Stopped
-    motorcontrol[0] = 0;
-    motorcontrol[1] = 0;
-    motorcontrol[2] = 0; 
-
-  }
   
-  // Now do the steering
-  // The Horizontal position will "weigh" the motor speed
-  // Values for each motor
-
-  if (joyposHorz < 460)
-  {
-    // Move Left
-    // As we are going left we need to reverse readings
-    // Map the number to a value of 255 maximum
-    joyposHorz = map(joyposHorz, 460, 0, 0, 255);
-
-    motorcontrol[0] = motorcontrol[0] - joyposHorz;
-    motorcontrol[1] = motorcontrol[1] + joyposHorz;
-
-    // Don't exceed range of 0-255 for motor speeds
-    if (motorcontrol[0] < 0)motorcontrol[0] = 0;
-    if (motorcontrol[1] > 255)motorcontrol[1] = 255;
-
-  }
-  else if (joyposHorz > 564)
-  {
-    // Move Right
-    // Map the number to a value of 255 maximum
-    joyposHorz = map(joyposHorz, 564, 1023, 0, 255);
-  
-    motorcontrol[0] = motorcontrol[0] + joyposHorz;
-    motorcontrol[1] = motorcontrol[1] - joyposHorz;
-
-    // Don't exceed range of 0-255 for motor speeds
-    if (motorcontrol[0] > 255)motorcontrol[0] = 255;
-    if (motorcontrol[1] < 0)motorcontrol[1] = 0;      
-
-  }
-
-  // Adjust to prevent "buzzing" at very low speed
-  if (motorcontrol[0] < 8)motorcontrol[0] = 0;
-  if (motorcontrol[1] < 8)motorcontrol[1] = 0;
+        
 
   //Display the Motor Control values in the serial monitor.
   Serial.print("Motor A: ");
