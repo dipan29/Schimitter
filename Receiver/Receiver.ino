@@ -102,15 +102,30 @@ void loop()
       }
 
       // SET CAMERA ORIENTATION
-      if(buf[2] > 650) {
+      if(buf[2] > 525) {
         camdir = 2;
-      } else if (buf[2] >=450) {
+      } else if (buf[2] >=475) {
         camdir = 0;
-      } else if (buf[2] < 450) {
+      } else if (buf[2] < 475) {
         camdir = 1;
       }
       
       // CODE FOR CAMERA MOVEMENT
+
+      if(camdir != 0) {
+        if(camdir == 1 && camDeg <= 170){
+          camDeg += 10;
+          camdir = 0;
+        } else if(camdir == 2 && camdeg >= 10) {
+          camDeg -= 10;
+          camdir = 0;
+        }
+      } else {
+        // Do nothing
+        camdir = 0;
+      }
+
+      // Place Servo Value
       
       //Code for Motor Movement
 
