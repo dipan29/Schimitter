@@ -73,7 +73,7 @@ void loop()
       Serial.print(buf[0]);
       Serial.print(" MotorB = ");
       Serial.print(buf[1]);
-      Serial.print(" Dir = ");
+      Serial.print(" Camera = ");
       Serial.println(buf[2]);
 
       xpos=buf[0]-123;

@@ -8,10 +8,12 @@
 // Define Joystick Connections
 #define joyVert    A0 
 #define joyHorz    A1
+#define joyCam     A3
 
 // Define Joystick Values - Start at 512 (middle position)
 int joyposVert = 512;
 int joyposHorz = 512;
+int joyposCam = 512;
 
 // Define addresses for radio channels
 #define CLIENT_ADDRESS 5   
@@ -39,8 +41,8 @@ void setup()
   if (!RadioManager.init())
     Serial.println("init failed");
   
-  // Set initial motor direction as forward
-  motorcontrol[2] = 0;
+  // Set initial camera direction as forward
+  motorcontrol[2] = 512;
 
 }
 
@@ -53,6 +55,7 @@ void loop()
   // Read the Joystick X and Y positions
   joyposVert = analogRead(joyVert); 
   joyposHorz = analogRead(joyHorz);
+  joyposCam = analogRead(joyCam);
   Serial.println(joyposVert);
   Serial.println(joyposHorz);
 
@@ -61,19 +64,17 @@ void loop()
   // Apply results to MotorSpeed and to Direction
   motorcontrol[0] = map(joyposVert, 0, 1023, 0, 255);
   motorcontrol[1] = map(joyposHorz, 0, 1023, 0, 255);
-  motorcontrol[2] = 0;
+  motorcontrol[2] = map(joyposCam, 0, 1023, 0, 255);
   Serial.println(motorcontrol[0]);
   Serial.println(motorcontrol[1]);
-
-  
-        
+  Serial.println(motorcontrol[2]);        
 
   //Display the Motor Control values in the serial monitor.
   Serial.print("Motor A: ");
   Serial.print(motorcontrol[0]);
   Serial.print(" - Motor B: ");
   Serial.print(motorcontrol[1]);
-  Serial.print(" - Direction: ");
+  Serial.print(" - Camera Axis : ");
   Serial.println(motorcontrol[2]);
   
   //Send a message containing Motor Control data to manager_server
