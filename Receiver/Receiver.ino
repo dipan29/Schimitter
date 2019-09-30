@@ -58,7 +58,7 @@ void setup()
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
 
-  camServo.attach(9) // Set Servo to Pin 9 of Arduino
+  camServo.attach(9); // Set Servo to Pin 9 of Arduino
   
   // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
   if (!RadioManager.init())
