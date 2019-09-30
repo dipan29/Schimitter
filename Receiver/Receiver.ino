@@ -6,9 +6,10 @@
 #include <SPI.h>
 
 //Include Servo Library
-#include <Servo.h>
+//#include <Servo.h>
+#include "ServoTimer2.h"
 
-Servo camServo;
+ServoTimer2 camServo;
 
 // Define addresses for radio channels
 #define CLIENT_ADDRESS 5   
@@ -30,6 +31,7 @@ int ypos=0; //0 Stop; 1 Back; 2 Forward
 int dir=0;
 int camdir = 0; // 0 - No movement; 1 Left; 2 Right
 int camDeg = 90; // (0-180) i.e. Servo Position
+int camPos = 0;
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -121,12 +123,15 @@ void loop()
 
       if(camdir != 0) {
         if(camdir == 1 && camDeg <= 170){
-          camDeg += 10;
+          camDeg += 10;          
+          camPos = map(camDeg,0,180,750,2250);
+          camServo.write(camPos); // This library requires pulsewidth so using that
           camdir = 0;
-          camServo.write(camDeg);
+          
         } else if(camdir == 2 && camDeg >= 10) {
           camDeg -= 10;
-          camServo.write(camDeg);
+          camPos = map(camDeg,0,180,750,2250);
+          camServo.write(camPos);
           camdir = 0;
         }
       } else {
