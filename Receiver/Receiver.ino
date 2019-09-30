@@ -5,6 +5,11 @@
 // Include dependant SPI Library 
 #include <SPI.h>
 
+//Include Servo Library
+#include <Servo.h>
+
+Servo camServo;
+
 // Define addresses for radio channels
 #define CLIENT_ADDRESS 5   
 #define SERVER_ADDRESS 9
@@ -24,7 +29,7 @@ int xpos=0; //0 Stop; 1 Left; 2 Right
 int ypos=0; //0 Stop; 1 Back; 2 Forward
 int dir=0;
 int camdir = 0; // 0 - No movement; 1 Left; 2 Right
-int camDeg = 90; // (0-180)
+int camDeg = 90; // (0-180) i.e. Servo Position
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -52,6 +57,8 @@ void setup()
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
+
+  camServo.attach(9) // Set Servo to Pin 9 of Arduino
   
   // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
   if (!RadioManager.init())
@@ -116,8 +123,10 @@ void loop()
         if(camdir == 1 && camDeg <= 170){
           camDeg += 10;
           camdir = 0;
-        } else if(camdir == 2 && camdeg >= 10) {
+          camServo.write(camDeg);
+        } else if(camdir == 2 && camDeg >= 10) {
           camDeg -= 10;
+          camServo.write(camDeg);
           camdir = 0;
         }
       } else {
