@@ -18,9 +18,13 @@ int in2 = 4;
 int right = 5;
 int in3 = 6;
 int in4 = 7;
-int xpos=0;
-int ypos=0;
+
+
+int xpos=0; //0 Stop; 1 Left; 2 Right
+int ypos=0; //0 Stop; 1 Back; 2 Forward
 int dir=0;
+int camdir = 0; // 0 - No movement; 1 Left; 2 Right
+int camDeg = 90; // (0-180)
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -52,6 +56,10 @@ void setup()
   // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
   if (!RadioManager.init())
     Serial.println("init failed");
+
+  // Initiate the motors with Zero
+  analogWrite(right, 0);
+  analogWrite(left, 0);
 } 
 
 void loop()
@@ -63,7 +71,6 @@ void loop()
     uint8_t len = sizeof(buf);
     uint8_t from;
     if (RadioManager.recvfromAck(buf, &len, &from))
-
     {
 
       //Serial Print the values of joystick
@@ -76,103 +83,119 @@ void loop()
       Serial.print(" Camera = ");
       Serial.println(buf[2]);
 
-      xpos=buf[0]-123;
-      ypos=buf[1]-129;
-      Serial.println(xpos);
-      Serial.println(ypos);
+      //SET xpos & ypos <== buf[1] ; buf[0]
 
-      //Motor Variables
-      if(xpos ==0 && ypos ==0){
-        analogWrite(right, 0);
-        analogWrite(left, 0);
-        Serial.println("zero zero condition");
-        dir=2;
+      if(buf[1] > 650) {
+        xpos = 2;
+      } else if (buf[1] >=450) {
+        xpos = 0;
+      } else if (buf[1] < 450) {
+        xpos = 1;
       }
-      else{
-        if(xpos == 0 && ypos > 0){
-          //up arrow
-          analogWrite(right, 255);
-          analogWrite(left, 255);
-          dir=1;
-          Serial.println("up arrow condition");
-       
-        }
-        else if(xpos == 0 && ypos < 0){
-          //down arrow
-          analogWrite(right, 255);
-          analogWrite(left, 255);
-          dir=0;
-          Serial.println("down arrow condition");
-       
-        }
-        else if(xpos < 0 && ypos == 0){
-          //left arrow
-          analogWrite(right, 255);
-          analogWrite(left, 0);
-          dir=1;
-          Serial.println("left arrow condition");
-       
-        }
-        else if(xpos > 0 && ypos == 0){
-          //right arrow
-          analogWrite(right, 0);
-          analogWrite(left, 255);
-          dir=1;
-          Serial.println("right arrow condition");
-        } 
-        if(xpos < 0 && ypos > 0){
-          //2nd Quadrant
-          analogWrite(right, 255);
-          analogWrite(left, 255+2*xpos);
-          dir=1;
-          Serial.println("2nd Quadrant condition");
-       
-        }
-        else if(xpos < 0 && ypos < 0){
-          //3rd Qudrant
-          analogWrite(right, 255);
-          analogWrite(left, 255+2*xpos);
-          dir=0;
-          Serial.println("3rd Qudrantcondition");
-       
-        }
-        else if(xpos > 0 && ypos > 0){
-          //1st Quadrant
-          analogWrite(right, 255-5*xpos);
-          analogWrite(left, 255);
-          dir=1;
-          Serial.println("1st Quadrantcondition");
-       
-        }
-        else if(xpos > 0 && ypos < 0)
-        {
-          //4th Quadrant
-          analogWrite(right, 255-2*xpos);
-          analogWrite(left, 255);
-          dir=0;
-          Serial.println("4th Quadrant condition");
-        } 
+
+      if(buf[0] > 650) {
+        ypos = 2;
+      } else if (buf[0] >=450) {
+        ypos = 0;
+      } else if (buf[0] < 450) {
+        ypos = 1;
       }
-      if(dir==1){
-        digitalWrite(in1, LOW);
-        digitalWrite(in2, HIGH);
-        digitalWrite(in3, LOW);
-        digitalWrite(in4, HIGH);
+
+      // SET CAMERA ORIENTATION
+      if(buf[2] > 650) {
+        camdir = 2;
+      } else if (buf[2] >=450) {
+        camdir = 0;
+      } else if (buf[2] < 450) {
+        camdir = 1;
       }
-      else if(dir==2){
-        
-         digitalWrite(in1, LOW);
-         digitalWrite(in2, LOW);
-         digitalWrite(in3, LOW);
-         digitalWrite(in4, LOW);
+      
+      // CODE FOR CAMERA MOVEMENT
+      
+      //Code for Motor Movement
+
+      if(xpos == 0 && ypos == 0) {
+        // Stop Condition Always
+        analogWrite(left,0);
+        analogWrite(right,0);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,LOW);
+      } else if (xpos == 0 && ypos == 2) {
+        // Go Forward
+        analogWrite(left,255);
+        analogWrite(right,255);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,HIGH);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,HIGH);
+      } else if (xpos ==0 && ypos == 1) {
+        // Go Backward
+        analogWrite(left,255);
+        analogWrite(right,255);
+        digitalWrite(in1,HIGH);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,HIGH);
+        digitalWrite(in4,LOW);
+      } else if (xpos == 2 && ypos == 2) {
+        // Go Forward Right
+        analogWrite(left,255);
+        analogWrite(right,127);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,HIGH);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,HIGH);
+      } else if (xpos == 1 && ypos == 2) {
+        // Go Forward Left
+        analogWrite(left,127);
+        analogWrite(right,255);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,HIGH);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,HIGH);
+      } else if (xpos == 1 && ypos == 1) {
+        // Go Backward Left
+        analogWrite(left,127);
+        analogWrite(right,255);
+        digitalWrite(in1,HIGH);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,HIGH);
+        digitalWrite(in4,LOW);
+      } else if (xpos == 2 && ypos == 1) {
+        // Go Backward Right
+        analogWrite(left,255);
+        analogWrite(right,127);
+        digitalWrite(in1,HIGH);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,HIGH);
+        digitalWrite(in4,LOW);
+      } else if (xpos == 2 && ypos == 0) {
+        // Go Right
+        analogWrite(left,255);
+        analogWrite(right,0);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,HIGH);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,LOW);
+      } else if (xpos == 1 && ypos == 0) {
+        // Go Left
+        analogWrite(left,0);
+        analogWrite(right,255);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,HIGH);
+      } else {
+        // STOP
+        analogWrite(left,0);
+        analogWrite(right,0);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,LOW);
       }
-      else{
-        digitalWrite(in1, HIGH);
-        digitalWrite(in2, LOW);
-        digitalWrite(in3, HIGH);
-        digitalWrite(in4, LOW);
-        
-      }   
+         
       // Send a reply back to the originator client, check for error
       if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
         Serial.println("sendtoWait failed");
