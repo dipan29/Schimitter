@@ -111,11 +111,11 @@ void loop()
       }
 
       // SET CAMERA ORIENTATION
-      if(buf[2] > 525) {
+      if(buf[2] > 130) {
         camdir = 2;
-      } else if (buf[2] >=475) {
+      } else if (buf[2] >=118) {
         camdir = 0;
-      } else if (buf[2] < 475) {
+      } else if (buf[2] < 118) {
         camdir = 1;
       }
       
