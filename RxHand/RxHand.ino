@@ -11,7 +11,7 @@ int pos_min[4] = {0,0,0,0};
 int pos_mid[4] = {90,90,90,45};
 
 int curr_pos[4] = {90,90,90,45}; // SET MEAN POSITIONS HERE 
-int curr_pos_val[4] ; // For storing PWM Values
+int curr_pos_value[4] ; // For storing PWM Values
 
 // Time Required for the 360 Servo to rotate 15 Degree
 int timeHold = 150;
@@ -62,13 +62,13 @@ void setup()
 
   // Set Servos to Mean position
   for(int i = 0; i <4 ; i++) {
-    curr_pos_val[i] = map(curr_pos[i],0,180,750,2250);
+    curr_pos_value[i] = map(curr_pos[i],0,180,750,2250);
   }
   // This library requires pulsewidth so using that
-  Servo0.write(curr_pos_val[0]);
-  Servo1.write(curr_pos_val[1]);
-  Servo2.write(curr_pos_val[2]);
-  Servo3.write(curr_pos_val[3]); 
+  Servo0.write(curr_pos_value[0]);
+  Servo1.write(curr_pos_value[1]);
+  Servo2.write(curr_pos_value[2]);
+  Servo3.write(curr_pos_value[3]); 
 
   // Servo Position Setting Done
   
@@ -80,7 +80,7 @@ void setup()
 
 void loop()
 {
-  Serial.println("Code");
+  
   if (RadioManager.available())
   {
  // Wait for a message addressed to us from the client
@@ -116,45 +116,45 @@ void loop()
       }
       */
       // Servo A / 0 For 360 Degree Servo
-      if (buf[0] >= 180 && cur_pos[0] <= (pos_max[0] - 15) {
+      if (buf[0] >= 180 && curr_pos[0] <= (pos_max[0] - 15)) {
         curr_pos[0] +=15;
         Servo0.write(750); // Rotate Clock Wise == 0
         delay(timeHold); // wait till rotating 15 deg
         Servo0.write(1500); // Stop Rotation 
-      } else if (buf[0] <= 70 && cur_pos[0] >= (pos_min[0] + 15) {
+      } else if (buf[0] <= 70 && curr_pos[0] >= (pos_min[0] + 15)) {
         curr_pos[0] -=15;
         Servo0.write(2250); // Rotate AntiClock Wise == 0
         delay(timeHold); // wait till rotating 15 deg
         Servo0.write(1500); // Stop Rotation 
       }
       // Servo B / 1
-      if (buf[1] >= 140 && cur_pos[1] <= (pos_max[1] - 15) {
+      if (buf[1] >= 140 && curr_pos[1] <= (pos_max[1] - 15)) {
         curr_pos[1] += 15;
-        curr_pos_val[1] = map(curr_pos[1],0,180,750,2250);
+        curr_pos_value[1] = map(curr_pos[1],0,180,750,2250);
         Servo1.write(curr_pos_value[1]);        
-      } else if (buf[1] <= 110 && cur_pos[1] >= (pos_min[1] + 15) {
+      } else if (buf[1] <= 110 && curr_pos[1] >= (pos_min[1] + 15)) {
         curr_pos[1] -= 15;
-        curr_pos_val[1] = map(curr_pos[1],0,180,750,2250);
+        curr_pos_value[1] = map(curr_pos[1],0,180,750,2250);
         Servo1.write(curr_pos_value[1]);
       }
       // Servo C / 2
-      if (buf[2] >= 140 && cur_pos[2] <= (pos_max[2] - 15) {
+      if (buf[2] >= 140 && curr_pos[2] <= (pos_max[2] - 15)) {
         curr_pos[2] += 15;
-        curr_pos_val[2] = map(curr_pos[2],0,180,750,2250);
+        curr_pos_value[2] = map(curr_pos[2],0,180,750,2250);
         Servo2.write(curr_pos_value[2]);        
-      } else if (buf[2] <= 110 && cur_pos[2] >= (pos_min[2] + 15) {
+      } else if (buf[2] <= 110 && curr_pos[2] >= (pos_min[2] + 15)) {
         curr_pos[2] -= 15;
-        curr_pos_val[2] = map(curr_pos[2],0,180,750,2250);
+        curr_pos_value[2] = map(curr_pos[2],0,180,750,2250);
         Servo2.write(curr_pos_value[2]);
       }
       // Servo D / 3
-      if (buf[3] >= 140 && cur_pos[3] <= (pos_max[3] - 15) {
+      if (buf[3] >= 140 && curr_pos[3] <= (pos_max[3] - 15)) {
         curr_pos[3] += 15;
-        curr_pos_val[3] = map(curr_pos[3],0,180,750,2250);
+        curr_pos_value[3] = map(curr_pos[3],0,180,750,2250);
         Servo3.write(curr_pos_value[3]);        
-      } else if (buf[3] <= 110 && cur_pos[3] >= (pos_min[3] + 15) {
+      } else if (buf[3] <= 110 && curr_pos[3] >= (pos_min[3] + 15)) {
         curr_pos[3] -= 15;
-        curr_pos_val[3] = map(curr_pos[3],0,180,750,2250);
+        curr_pos_value[3] = map(curr_pos[3],0,180,750,2250);
         Servo3.write(curr_pos_value[3]);
       }
       
