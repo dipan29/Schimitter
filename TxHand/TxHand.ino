@@ -59,9 +59,9 @@ void loop()
   joyposVert_2 = analogRead(joyVert_2); 
   joyposHorz_2 = analogRead(joyHorz_2);
   
-  Serial.println(joyposVert_1);
-  Serial.println(joyposHorz_1);
-  Serial.println(joyposVert_2);
+  Serial.print(joyposVert_1);
+  Serial.print(joyposHorz_1);
+  Serial.print(joyposVert_2);
   Serial.println(joyposHorz_2);
 
  // Determine if this is a forward or backward motion
@@ -74,11 +74,11 @@ void loop()
 //Display the Motor Control values in the serial monitor.
   Serial.print("Vertical_1: ");
   Serial.print(motorcontrol[0]);
-  Serial.print("Horizontal_1: ");
-  Serial.print(motorcontrol[1]);
+  Serial.print(" | Horizontal_1: ");
+  Serial.println(motorcontrol[1]);
   Serial.print("Vertical_2: ");
-  Serial.println(motorcontrol[2]); 
-  Serial.print("Horizontal_2: ");
+  Serial.print(motorcontrol[2]); 
+  Serial.print(" | Horizontal_2: ");
   Serial.println(motorcontrol[3]); 
 
 //Send a message containing Motor Control data to manager_server
