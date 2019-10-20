@@ -16,7 +16,7 @@ void loop() {
     value = Serial.read();
     if(value > 180 || value < 0) {
       Serial.println("Error! Enter value withing 0 - 180 Range");
-      break;
+      
     } else {
       c_value = map(value,0,180,750,2250);
       Serial.print("Sending ");
