@@ -59,9 +59,9 @@ void loop()
   joyposVert_2 = analogRead(joyVert_2); 
   joyposHorz_2 = analogRead(joyHorz_2);
   
-  Serial.print(joyposVert_1);
-  Serial.print(joyposHorz_1);
-  Serial.print(joyposVert_2);
+  Serial.println(joyposVert_1);
+  Serial.println(joyposHorz_1);
+  Serial.println(joyposVert_2);
   Serial.println(joyposHorz_2);
 
  // Determine if this is a forward or backward motion
