@@ -1,4 +1,18 @@
-  
+/* Servo Calibrations 
+ *  a-> 
+ *  b-> (30,180)
+ *  c-> (10,90)
+ *  d-> (10-120)
+ */
+
+// Servo Configuration
+int pos_max[4] = {180,180,180,90};
+int pos_min[4] = {0,0,0,0};
+int pos_mid[4] = {90,90,90,45};
+
+int curr_pos[4] = {90,90,90,45}; // SET MEAN POSITIONS HERE 
+int curr_pos_val[4] ; // For storing PWM Values
+
 // Include RadioHead ReliableDatagram & NRF24 Libraries
 #include <RHReliableDatagram.h>
 #include <RH_NRF24.h>
@@ -7,33 +21,17 @@
 #include <SPI.h>
 
 //Include Servo Library
-//#include <Servo.h>
 #include <ServoTimer2.h>
 
-ServoTimer2 Servo_a;
-ServoTimer2 Servo_b;
-ServoTimer2 Servo_c;
-ServoTimer2 Servo_d;
+ServoTimer2 Servo0; // Base
+ServoTimer2 Servo1; // Elbow Circular
+ServoTimer2 Servo2; // Wrist UpDown
+ServoTimer2 Servo3; // Grip
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 5   
-#define SERVER_ADDRESS 9
+#define CLIENT_ADDRESS 2   
+#define SERVER_ADDRESS 7
 
-int dir_a = 0; // 0 - No movement; 1 Left; 2 Right
-int Deg_a = 90; // (0-180) i.e. Servo Position
-int Pos_a = 0;
-
-int dir_b = 0; // 0 - No movement; 1 Left; 2 Right
-int Deg_b = 90; // (0-180) i.e. Servo Position
-int Pos_b = 0;
-
-int dir_c = 0; // 0 - No movement; 1 Left; 2 Right
-int Deg_c = 90; // (0-180) i.e. Servo Position
-int Pos_c = 0;
-
-int dir_d = 0; // 0 - No movement; 1 Left; 2 Right
-int Deg_d = 90; // (0-180) i.e. Servo Position
-int Pos_d = 0;
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -52,16 +50,25 @@ int bufi[4];
 void setup()
 {
   // Setup Serial Monitor
-  Serial.begin(115200);
+  Serial.begin(9600);
+  
+  Servo0.attach(2); // Set Servo to Pin 3 of Arduino
+  Servo1.attach(4); // Set Servo to Pin 5 of Arduino
+  Servo3.attach(3); // Set Servo to Pin 6 of Arduino
+  Servo2.attach(5); // Set Servo to Pin 9 of Arduino
 
-   Servo_a.attach(3); // Set Servo to Pin 3 of Arduino
+  // Set Servos to Mean position
+  for(int i = 0; i <4 ; i++) {
+    curr_pos_val[i] = map(curr_pos[i],0,180,750,2250);
+  }
+  // This library requires pulsewidth so using that
+  Servo0.write(curr_pos_val[0]);
+  Servo1.write(curr_pos_val[1]);
+  Servo2.write(curr_pos_val[2]);
+  Servo3.write(curr_pos_val[3]); 
 
-   Servo_b.attach(5); // Set Servo to Pin 5 of Arduino
-
-   Servo_c.attach(6); // Set Servo to Pin 6 of Arduino
-
-   Servo_d.attach(9); // Set Servo to Pin 9 of Arduino
-
+  // Servo Position Setting Done
+  
    // Initialize RadioManager with defaults - 2.402 GHz (channel 2), 2Mbps, 0dBm
   if (!RadioManager.init())
     Serial.println("init failed");
@@ -74,7 +81,8 @@ void loop()
   if (RadioManager.available())
   {
  // Wait for a message addressed to us from the client
-    uint8_t len = sizeof(buf);
+    uint8_t len = 
+    sizeof(buf);
     uint8_t from;
     if (RadioManager.recvfromAck(buf, &len, &from))
     {
@@ -84,138 +92,55 @@ void loop()
       Serial.print(from, HEX);
       Serial.print(": Servo_A = ");
       Serial.print(buf[0]);
-      Serial.print(" Servo_B = ");
+      Serial.print(" | Servo_B = ");
       Serial.print(buf[1]);
-      Serial.print(" Servo_C = ");
+      Serial.print(" | Servo_C = ");
       Serial.println(buf[2]);
-      Serial.print(" Servo_D = ");
+      Serial.print(" | Servo_D = ");
       Serial.println(buf[3]);
+
+      // Update Servo Position Condition Based
+      // Servo A / 0
+      if (buf[0] >= 140 && cur_pos[0] <= (pos_max[0] - 15) {
+        curr_pos[0] += 15;
+        curr_pos_val[0] = map(curr_pos[0],0,180,750,2250);
+        Servo0.write(curr_pos_value[0]);        
+      } else if (buf[0] <= 110 && cur_pos[0] >= (pos_min[0] + 15) {
+        curr_pos[0] -= 15;
+        curr_pos_val[0] = map(curr_pos[0],0,180,750,2250);
+        Servo0.write(curr_pos_value[0]);
+      }
+      // Servo B / 1
+      if (buf[1] >= 140 && cur_pos[1] <= (pos_max[1] - 15) {
+        curr_pos[1] += 15;
+        curr_pos_val[1] = map(curr_pos[1],0,180,750,2250);
+        Servo1.write(curr_pos_value[1]);        
+      } else if (buf[1] <= 110 && cur_pos[1] >= (pos_min[1] + 15) {
+        curr_pos[1] -= 15;
+        curr_pos_val[1] = map(curr_pos[1],0,180,750,2250);
+        Servo1.write(curr_pos_value[1]);
+      }
+      // Servo C / 2
+      if (buf[2] >= 140 && cur_pos[2] <= (pos_max[2] - 15) {
+        curr_pos[2] += 15;
+        curr_pos_val[2] = map(curr_pos[2],0,180,750,2250);
+        Servo2.write(curr_pos_value[2]);        
+      } else if (buf[2] <= 110 && cur_pos[2] >= (pos_min[0] + 15) {
+        curr_pos[2] -= 15;
+        curr_pos_val[2] = map(curr_pos[2],0,180,750,2250);
+        Servo2.write(curr_pos_value[2]);
+      }
+      // Servo D / 3
+      if (buf[3] >= 140 && cur_pos[3] <= (pos_max[3] - 15) {
+        curr_pos[3] += 15;
+        curr_pos_val[3] = map(curr_pos[3],0,180,750,2250);
+        Servo3.write(curr_pos_value[3]);        
+      } else if (buf[3] <= 110 && cur_pos[3] >= (pos_min[3] + 15) {
+        curr_pos[3] -= 15;
+        curr_pos_val[3] = map(curr_pos[3],0,180,750,2250);
+        Servo3.write(curr_pos_value[3]);
+      }
       
-      // SET Servo_A ORIENTATION
-      if(buf[0] > 525) {
-        dir_a = 2;
-      } else if (buf[0] >=475) {
-        dir_a = 0;
-      } else if (buf[0] < 475) {
-        dir_a = 1;
-      }  
-       
-        // SET Servo_B ORIENTATION
-      if(buf[1] > 525) {
-        dir_b = 2;
-      } else if (buf[1] >=475) {
-        dir_b = 0;
-      } else if (buf[1] < 475) {
-        dir_b = 1;
-      }  
-
-        // SET Servo_C ORIENTATION
-      if(buf[2] > 525) {
-        dir_c = 2;
-      } else if (buf[2] >=475) {
-        dir_c = 0;
-      } else if (buf[2] < 475) {
-        dir_c = 1;
-      }  
-
-        // SET Servo_D ORIENTATION
-      if(buf[3] > 525) {
-        dir_d = 2;
-      } else if (buf[3] >=475) {
-        dir_d = 0;
-      } else if (buf[3] < 475) {
-        dir_d = 1;
-      }  
-
-// CODE FOR Servo_A MOVEMENT
-
-      if(dir_a != 0) {
-        if(dir_a == 1 && Deg_a <= 170){
-          Deg_a += 10;          
-          Pos_a = map(Deg_a,0,180,750,2250);
-          Servo_a.write(Pos_a); // This library requires pulsewidth so using that
-          dir_a = 0;
-          
-        } else if(dir_a == 2 && Deg_a >= 10) {
-          Deg_a -= 10;
-          Pos_a = map(Deg_a,0,180,750,2250);
-          Servo_a.write(Pos_a);
-          dir_a = 0;
-        }
-      } else {
-        // Do nothing
-        dir_a = 0;
-      }
-
-      
-// CODE FOR Servo_B MOVEMENT
-
-      if(dir_b != 0) {
-        if(dir_b == 1 && Deg_b <= 170){
-          Deg_b += 10;          
-          Pos_b = map(Deg_b,0,180,750,2250);
-          Servo_b.write(Pos_b); // This library requires pulsewidth so using that
-          dir_b = 0;
-          
-        } else if(dir_b == 2 && Deg_b >= 10) {
-          Deg_b -= 10;
-          Pos_b = map(Deg_b,0,180,750,2250);
-          Servo_b.write(Pos_b);
-          dir_b = 0;
-        }
-      } else {
-        // Do nothing
-        dir_b = 0;
-      }
-
-// CODE FOR Servo_C MOVEMENT
-
-      if(dir_c != 0) {
-        if(dir_c == 1 && Deg_c <= 170){
-          Deg_c += 10;          
-          Pos_c = map(Deg_c,0,180,750,2250);
-          Servo_c.write(Pos_c); // This library requires pulsewidth so using that
-          dir_c = 0;
-          
-        } else if(dir_c == 2 && Deg_c >= 10) {
-          Deg_c -= 10;
-          Pos_c = map(Deg_c,0,180,750,2250);
-          Servo_c.write(Pos_c);
-          dir_b = 0;
-        }
-      } else {
-        // Do nothing
-        dir_c = 0;
-      }
-
-// CODE FOR Servo_D MOVEMENT
-
-      if(dir_d != 0) {
-        if(dir_d == 1 && Deg_d <= 170){
-          Deg_d += 10;          
-          Pos_d = map(Deg_d,0,180,750,2250);
-          Servo_d.write(Pos_d); // This library requires pulsewidth so using that
-          dir_d = 0;
-          
-        } else if(dir_d == 2 && Deg_d >= 10) {
-          Deg_d -= 10;
-          Pos_d = map(Deg_d,0,180,750,2250);
-          Servo_d.write(Pos_d);
-          dir_d = 0;
-        }
-      } else {
-        // Do nothing
-        dir_d = 0;
-      }
-
-/* Servo Calibrations 
- *  a-> 
- *  b-> (30,180)
- *  c-> (10,90)
- *  d-> (10-120)
- */
-
-
 
 // Send a reply back to the originator client, check for error
       if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))

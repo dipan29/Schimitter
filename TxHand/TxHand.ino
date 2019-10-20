@@ -6,10 +6,10 @@
 #include <SPI.h>
 
 // Define Joystick Connections
-#define joyVert_1    A0 
-#define joyHorz_1    A1
-#define joyVert_2    A3
-#define joyHorz_2    A4
+#define joyVert_1    A0 // For Base motor A (Left Right)
+#define joyHorz_1    A1 // For Motor C (Up Down)
+#define joyVert_2    A2 // For Motor B (left right - circuar)
+#define joyHorz_2    A3 // For Motor D (Claws)
 
 // Define Joystick Values - Start at 512 (middle position)
 
@@ -19,8 +19,8 @@ int joyposVert_2 = 512;
 int joyposHorz_2 = 512;
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 5   
-#define SERVER_ADDRESS 9
+#define CLIENT_ADDRESS 2   
+#define SERVER_ADDRESS 7
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -67,14 +67,9 @@ void loop()
  // Determine if this is a forward or backward motion
 
   motorcontrol[0] = map(joyposVert_1, 0, 1023, 0, 255);
-  motorcontrol[1] = map(joyposHorz_1, 0, 1023, 0, 255);
-  motorcontrol[2] = map(joyposVert_2, 0, 1023, 0, 255);
+  motorcontrol[1] = map(joyposVert_2, 0, 1023, 0, 255);
+  motorcontrol[2] = map(joyposHorz_1, 0, 1023, 0, 255);
   motorcontrol[3] = map(joyposHorz_2, 0, 1023, 0, 255);
-  Serial.println(motorcontrol[0]);
-  Serial.println(motorcontrol[1]);
-  Serial.println(motorcontrol[2]); 
-  Serial.println(motorcontrol[3]); 
-
 
 //Display the Motor Control values in the serial monitor.
   Serial.print("Vertical_1: ");
