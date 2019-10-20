@@ -7,13 +7,13 @@
 
 //Include Servo Library
 //#include <Servo.h>
-#include "ServoTimer2.h"
+#include <ServoTimer2.h>
 
 ServoTimer2 camServo;
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 5   
-#define SERVER_ADDRESS 9
+#define CLIENT_ADDRESS 1   
+#define SERVER_ADDRESS 2
 
 // Motor A Connections (LEFT)
 int left = 3;
@@ -73,7 +73,7 @@ void setup()
 
 void loop()
 {
-  Serial.println("Code");
+  
   if (RadioManager.available())
   {
  // Wait for a message addressed to us from the client
@@ -94,19 +94,19 @@ void loop()
 
       //SET xpos & ypos <== buf[1] ; buf[0]
 
-      if(buf[1] > 650) {
+      if(buf[1] > 160) {
         xpos = 2;
-      } else if (buf[1] >=450) {
+      } else if (buf[1] >=110) {
         xpos = 0;
-      } else if (buf[1] < 450) {
+      } else if (buf[1] < 110) {
         xpos = 1;
       }
 
-      if(buf[0] > 650) {
+      if(buf[0] > 160) {
         ypos = 2;
-      } else if (buf[0] >=450) {
+      } else if (buf[0] >=110) {
         ypos = 0;
-      } else if (buf[0] < 450) {
+      } else if (buf[0] < 110) {
         ypos = 1;
       }
 
@@ -224,10 +224,20 @@ void loop()
         digitalWrite(in3,LOW);
         digitalWrite(in4,LOW);
       }
-         
+        
       // Send a reply back to the originator client, check for error
       if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
         Serial.println("sendtoWait failed");
+    } else {
+        analogWrite(left,0);
+        analogWrite(right,0);
+        digitalWrite(in1,LOW);
+        digitalWrite(in2,LOW);
+        digitalWrite(in3,LOW);
+        digitalWrite(in4,LOW);
     }
-  }              
+  } else {
+            
+  }
+  //delay(100);
 }

@@ -8,7 +8,7 @@
 // Define Joystick Connections
 #define joyVert    A0 
 #define joyHorz    A1
-#define joyCam     A3
+#define joyCam     A2
 
 // Define Joystick Values - Start at 512 (middle position)
 int joyposVert = 512;
@@ -16,8 +16,8 @@ int joyposHorz = 512;
 int joyposCam = 512;
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 5   
-#define SERVER_ADDRESS 9
+#define CLIENT_ADDRESS 1
+#define SERVER_ADDRESS 2
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -62,9 +62,12 @@ void loop()
   // Determine if this is a forward or backward motion
   // Do this by reading the Verticle Value
   // Apply results to MotorSpeed and to Direction
-  motorcontrol[0] = map(joyposVert, 0, 1023, 0, 255);
-  motorcontrol[1] = map(joyposHorz, 0, 1023, 0, 255);
-  motorcontrol[2] = map(joyposCam, 0, 1023, 0, 255);
+  int jpV = 1023 - joyposVert;
+  int jpH = 1023 - joyposHorz;
+  int jpC = 1023 - joyposCam;
+  motorcontrol[0] = map(jpV, 0, 1023, 0, 255);
+  motorcontrol[1] = map(jpH, 0, 1023, 0, 255);
+  motorcontrol[2] = map(jpC, 0, 1023, 0, 255);
   Serial.println(motorcontrol[0]);
   Serial.println(motorcontrol[1]);
   Serial.println(motorcontrol[2]);        
