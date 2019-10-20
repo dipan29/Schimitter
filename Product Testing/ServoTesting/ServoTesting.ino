@@ -12,7 +12,8 @@ void setup() {
 void loop() {
   
   Serial.println("Enter a Degree Value : - ");
-  while(value = Serial.read()) {
+  if(Serial.available() > 0) {
+    value = Serial.read();
     if(value > 180 || value < 0) {
       Serial.println("Error! Enter value withing 0 - 180 Range");
       break;
@@ -26,4 +27,5 @@ void loop() {
       servo.write(c_value);
     }
   }
+  delay(1000);
 }
