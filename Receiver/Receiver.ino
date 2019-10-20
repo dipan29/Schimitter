@@ -122,13 +122,13 @@ void loop()
       // CODE FOR CAMERA MOVEMENT
 
       if(camdir != 0) {
-        if(camdir == 1 && camDeg <= 170){
+        if(camdir == 1 && camDeg <= 160){
           camDeg += 10;          
           camPos = map(camDeg,0,180,750,2250);
           camServo.write(camPos); // This library requires pulsewidth so using that
           camdir = 0;
           
-        } else if(camdir == 2 && camDeg >= 10) {
+        } else if(camdir == 2 && camDeg >= 20) {
           camDeg -= 10;
           camPos = map(camDeg,0,180,750,2250);
           camServo.write(camPos);
