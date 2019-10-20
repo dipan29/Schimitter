@@ -24,7 +24,7 @@ int timeHold = 150;
 #include <SPI.h>
 
 //Include Servo Library
-#include "ServoTimer2.h"
+#include <ServoTimer2.h>
 
 ServoTimer2 Servo0; // Base
 ServoTimer2 Servo1; // Elbow Circular
@@ -32,8 +32,8 @@ ServoTimer2 Servo2; // Wrist UpDown
 ServoTimer2 Servo3; // Grip
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 2   
-#define SERVER_ADDRESS 7
+#define CLIENT_ADDRESS 5   
+#define SERVER_ADDRESS 6
 
 
 // Create an instance of the radio driver
@@ -53,12 +53,12 @@ int bufi[4];
 void setup()
 {
   // Setup Serial Monitor
-  Serial.begin(9600);
+  Serial.begin(115200);
   
-  Servo0.attach(2); // Set Servo to Pin 3 of Arduino
-  Servo1.attach(4); // Set Servo to Pin 5 of Arduino
-  Servo3.attach(3); // Set Servo to Pin 6 of Arduino
-  Servo2.attach(5); // Set Servo to Pin 9 of Arduino
+  Servo0.attach(2); // Set Servo to Pin 2 of Arduino
+  Servo1.attach(4); // Set Servo to Pin 3 of Arduino
+  Servo2.attach(3); // Set Servo to Pin 4 of Arduino
+  Servo3.attach(5); // Set Servo to Pin 5 of Arduino
 
   // Set Servos to Mean position
   for(int i = 0; i <4 ; i++) {

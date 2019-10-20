@@ -19,8 +19,8 @@ int joyposVert_2 = 512;
 int joyposHorz_2 = 512;
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 2   
-#define SERVER_ADDRESS 7
+#define CLIENT_ADDRESS 5   
+#define SERVER_ADDRESS 6
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
