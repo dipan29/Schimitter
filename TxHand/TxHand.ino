@@ -74,9 +74,9 @@ void loop()
 //Display the Motor Control values in the serial monitor.
   Serial.print("Vertical_1: ");
   Serial.print(motorcontrol[0]);
-  Serial.print(" | Horizontal_1: ");
+  Serial.print(" | Vertical_2: ");
   Serial.println(motorcontrol[1]);
-  Serial.print("Vertical_2: ");
+  Serial.print("Horizontal_1: ");
   Serial.print(motorcontrol[2]); 
   Serial.print(" | Horizontal_2: ");
   Serial.println(motorcontrol[3]); 
