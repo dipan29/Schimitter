@@ -125,7 +125,7 @@ void loop()
         curr_pos[2] += 15;
         curr_pos_val[2] = map(curr_pos[2],0,180,750,2250);
         Servo2.write(curr_pos_value[2]);        
-      } else if (buf[2] <= 110 && cur_pos[2] >= (pos_min[0] + 15) {
+      } else if (buf[2] <= 110 && cur_pos[2] >= (pos_min[2] + 15) {
         curr_pos[2] -= 15;
         curr_pos_val[2] = map(curr_pos[2],0,180,750,2250);
         Servo2.write(curr_pos_value[2]);
