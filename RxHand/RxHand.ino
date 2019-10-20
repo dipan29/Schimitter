@@ -13,6 +13,9 @@ int pos_mid[4] = {90,90,90,45};
 int curr_pos[4] = {90,90,90,45}; // SET MEAN POSITIONS HERE 
 int curr_pos_val[4] ; // For storing PWM Values
 
+// Time Required for the 360 Servo to rotate 15 Degree
+int timeHold = 150;
+
 // Include RadioHead ReliableDatagram & NRF24 Libraries
 #include <RHReliableDatagram.h>
 #include <RH_NRF24.h>
@@ -100,7 +103,8 @@ void loop()
       Serial.println(buf[3]);
 
       // Update Servo Position Condition Based
-      // Servo A / 0
+      // Servo A / 0 For 180 Degree Servo
+      /*
       if (buf[0] >= 140 && cur_pos[0] <= (pos_max[0] - 15) {
         curr_pos[0] += 15;
         curr_pos_val[0] = map(curr_pos[0],0,180,750,2250);
@@ -109,6 +113,19 @@ void loop()
         curr_pos[0] -= 15;
         curr_pos_val[0] = map(curr_pos[0],0,180,750,2250);
         Servo0.write(curr_pos_value[0]);
+      }
+      */
+      // Servo A / 0 For 360 Degree Servo
+      if (buf[0] >= 180 && cur_pos[0] <= (pos_max[0] - 15) {
+        curr_pos[0] +=15;
+        Servo0.write(750); // Rotate Clock Wise == 0
+        delay(timeHold); // wait till rotating 15 deg
+        Servo0.write(1500); // Stop Rotation 
+      } else if (buf[0] <= 70 && cur_pos[0] >= (pos_min[0] + 15) {
+        curr_pos[0] -=15;
+        Servo0.write(2250); // Rotate AntiClock Wise == 0
+        delay(timeHold); // wait till rotating 15 deg
+        Servo0.write(1500); // Stop Rotation 
       }
       // Servo B / 1
       if (buf[1] >= 140 && cur_pos[1] <= (pos_max[1] - 15) {
