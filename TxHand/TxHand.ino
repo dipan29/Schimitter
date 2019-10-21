@@ -69,7 +69,7 @@ void loop()
   motorcontrol[0] = map(joyposVert_1, 0, 1023, 0, 255);
   motorcontrol[1] = map(joyposVert_2, 0, 1023, 0, 255);
   motorcontrol[2] = map(joyposHorz_1, 0, 1023, 0, 255);
-  motorcontrol[3] = map(joyposHorz_2, 0, 1023, 0, 255);
+  motorcontrol[3] = map(joyposHorz_2, 100, 950, 0, 255);
 
 //Display the Motor Control values in the serial monitor.
   Serial.print("Vertical_1: ");
