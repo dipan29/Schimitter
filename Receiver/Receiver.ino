@@ -30,7 +30,7 @@ int xpos=0; //0 Stop; 1 Left; 2 Right
 int ypos=0; //0 Stop; 1 Back; 2 Forward
 int dir=0;
 int camdir = 0; // 0 - No movement; 1 Left; 2 Right
-int camDeg = 90; // (0-180) i.e. Servo Position
+int camDeg = 120; // (0-180) i.e. Servo Position
 int camPos = 0;
 
 // Create an instance of the radio driver

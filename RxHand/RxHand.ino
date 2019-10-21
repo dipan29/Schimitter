@@ -53,7 +53,7 @@ int bufi[4];
 void setup()
 {
   // Setup Serial Monitor
-  Serial.begin(115200);
+  Serial.begin(9600);
   
   Servo0.attach(2); // Set Servo to Pin 2 of Arduino
   Servo1.attach(4); // Set Servo to Pin 3 of Arduino

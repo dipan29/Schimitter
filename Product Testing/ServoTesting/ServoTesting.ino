@@ -2,14 +2,14 @@
 //#include <Servo.h>
 
 //Servo servo, servo2 ;
-ServoTimer2 servo;
+ServoTimer2 servo, servo2;
 int value = 0;
 int c_value = 750;
 
 void setup() {
   Serial.begin(9600);
-  servo.attach(4); 
-  //servo2.attach(2); // Attach Servo to Pin 4
+  servo.attach(5); 
+  servo2.attach(2); // Attach Servo to Pin 4
 }
 
 void loop() {
@@ -30,7 +30,7 @@ void loop() {
       Serial.print(c_value);
       Serial.println(" to the servo.\n");
       servo.write(c_value);
-      //servo2.write(value);
+      servo2.write(c_value);
     
   }
   delay(1000);
