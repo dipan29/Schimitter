@@ -32,8 +32,8 @@ ServoTimer2 Servo2; // Wrist UpDown
 ServoTimer2 Servo3; // Grip
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 5   
-#define SERVER_ADDRESS 6
+#define CLIENT_ADDRESS 7  
+#define SERVER_ADDRESS 9
 
 
 // Create an instance of the radio driver
@@ -53,7 +53,7 @@ int bufi[4];
 void setup()
 {
   // Setup Serial Monitor
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   Servo0.attach(2); // Set Servo to Pin 2 of Arduino
   Servo1.attach(4); // Set Servo to Pin 3 of Arduino

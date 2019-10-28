@@ -19,8 +19,8 @@ int joyposVert_2 = 512;
 int joyposHorz_2 = 512;
 
 // Define addresses for radio channels
-#define CLIENT_ADDRESS 5   
-#define SERVER_ADDRESS 6
+#define CLIENT_ADDRESS 7   
+#define SERVER_ADDRESS 9
 
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
@@ -69,7 +69,7 @@ void loop()
   motorcontrol[0] = map(joyposVert_1, 0, 1023, 0, 255);
   motorcontrol[1] = map(joyposVert_2, 0, 1023, 0, 255);
   motorcontrol[2] = map(joyposHorz_1, 0, 1023, 0, 255);
-  motorcontrol[3] = map(joyposHorz_2, 100, 950, 0, 255);
+  motorcontrol[3] = map(joyposHorz_2, 0, 1023, 0, 255);
 
 //Display the Motor Control values in the serial monitor.
   Serial.print("Vertical_1: ");
