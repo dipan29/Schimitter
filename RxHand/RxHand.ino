@@ -98,7 +98,7 @@ void loop()
       Serial.print(" | Servo_B = ");
       Serial.print(buf[1]);
       Serial.print(" | Servo_C = ");
-      Serial.println(buf[2]);
+      Serial.print(buf[2]);
       Serial.print(" | Servo_D = ");
       Serial.println(buf[3]);
 
